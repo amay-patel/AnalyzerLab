@@ -1,82 +1,111 @@
 #include <iostream>
 #include <string>
-#include <vector>
 #include <chrono>
 
-inline long long systemTimeNanoseconds() {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::time_point_cast<std::chrono::milliseconds>(
-                    std::chrono::system_clock::now()  ).time_since_epoch()
-    ).count();
-}
-inline std::vector<std::string>& getStringData() {
-    static std::vector<std::string> stringDataSet;
-    if (stringDataSet.size() == 0)    {
-        char tempSet[6] = "     ";
-        for (tempSet[0] = 'a'; tempSet[0] <= 'z'; tempSet[0]++)
-            for (tempSet[1] = 'a'; tempSet[1] <= 'z'; tempSet[1]++)
-                for (tempSet[2] = 'a'; tempSet[2] <= 'z'; tempSet[2]++)
-                    for (tempSet[3] = 'a'; tempSet[3] <= 'z'; tempSet[3]++)
-                        for (tempSet[4] = 'a'; tempSet[4] <= 'z'; tempSet[4]++)
-                            stringDataSet.push_back(std::string(tempSet));
-    }
-    return stringDataSet;
-}
+using namespace std;
 
-int linearSearch(std::vector<std::string> dataSet,std::string element) {
-    int elementIndex=-1;
-    int index=0;
-    for(std::string value: dataSet) {
-        if(value.compare(element)==0)
-            elementIndex=index;
-        else
-            index++;
-    }
-    return elementIndex;
-}
-int binarySearch(std::vector<std::string> dataSet, std::string element) {
-    int elementIndex=-1;
-    int max, min, mid;
-    min=0;
-    max=dataSet.size()-1;
-    mid= min+ (max)/2;
-    while (mid!=min) {
-        if(dataSet[mid]==element) {
-            elementIndex=mid;
-            return elementIndex;
-        }
-        int compareS=element.compare(dataSet[mid]);
-        if (compareS<0) {
-            max=mid-1;
-        }
-        else {
-            min=mid+1;
-        }
-        mid=min+(max-min)/2;
-    }
-    if(dataSet[mid]==element) {
-        elementIndex=mid;
-    }
-    return elementIndex;
-}
+
+int linearSearch(string[], string);
+
+int binarySearch(string[], string);
+
+string *getData();
+
+
 int main() {
-    int testResult;
-    std::vector<std::string> data= getStringData();
-    std::string test;
-    std::cout << "Enter string to test:";
-    std::cin >> test;
+    string *dataSet = getData();
 
-    std::cout<<"Linear search:\n";
-    std::cout<<systemTimeNanoseconds()<<"\n";
-    testResult=linearSearch(data,test);
-    std::cout<<systemTimeNanoseconds()<<"\n";
-    std::cout << "Result: " << testResult << "\n";
+    linearSearch(dataSet, "not_here");
+    binarySearch(dataSet, "not_here");
 
-    std::cout<<"\nBinary Search:\n";
-    std::cout<<systemTimeNanoseconds()<<"\n";
-    testResult=binarySearch(data,test);
-    std::cout<<systemTimeNanoseconds()<<"\n";
-    std::cout << "Result: " << testResult << "\n";
+    linearSearch(dataSet, "mzzzz");
+    binarySearch(dataSet, "mzzzz");
+
+    linearSearch(dataSet, "aaaaa");
+    binarySearch(dataSet, "aaaaa");
+    
     return 0;
+}
+
+int linearSearch(string dataSet[], string element){
+    auto s = chrono::system_clock::now().time_since_epoch().count();
+    int position = -1;
+    for (int i = 0; i < 26 * 26 * 26 * 26 * 26; i++) {
+        if (dataSet[i] == element) {
+            position = i;
+            break;
+        }
+    }
+    auto e = chrono::system_clock::now().time_since_epoch().count();
+    cout << "The time for linear search with element: " << element << " is " << (e-s) << "\n";
+    return position;
+}
+
+int binarySearch(string dataSet[], string element){
+    auto s = chrono::system_clock::now().time_since_epoch().count();
+
+    int result = -1;
+
+    int min = 0;
+    int max = 26 * 26 * 26 * 26 * 26;
+
+    while (true){
+        if (min > max){
+            break;
+        }
+
+        int mid = (min+max)/2;
+
+        string m = dataSet[mid];
+
+        if (m == (element)) {
+            result = mid;
+            break;
+        }
+        if (m > (element)) {
+            max = mid-1;
+            continue;
+        }
+        if (m < (element)){
+            min = mid+1;
+            continue;
+        }
+    }
+
+    auto e = chrono::system_clock::now().time_since_epoch().count();
+    cout << "The time for binary search with element: " << element << " is " << (e-s) << "\n";
+
+    return result;
+}
+
+
+string * stringDataSet = NULL;
+
+string * getData(){
+	if (stringDataSet == NULL)
+	{
+		stringDataSet = new string[26 * 26 * 26 * 26 * 26];
+		char tempSet[5];
+		int index = 0;
+
+		for (tempSet[0] = 'a'; tempSet[0] <= 'z'; tempSet[0]++)
+		{
+			for (tempSet[1] = 'a'; tempSet[1] <= 'z'; tempSet[1]++)
+			{
+				for (tempSet[2] = 'a'; tempSet[2] <= 'z'; tempSet[2]++)
+				{
+					for (tempSet[3] = 'a'; tempSet[3] <= 'z'; tempSet[3]++)
+					{
+						for (tempSet[4] = 'a'; tempSet[4] <= 'z'; tempSet[4]++)
+						{
+							stringDataSet[index++] = string(tempSet);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return stringDataSet;
 }
 
