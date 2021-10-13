@@ -63,14 +63,14 @@ int main() {
     int testResult;
     std::vector<std::string> data= getStringData();
     std::string test;
-    std::cout << "Enter string to test:";
+    std::cout << "Enter string to test: ";
     std::cin >> test;
 
     std::cout<<"Linear search:\n";
     std::cout<<systemTimeNanoseconds()<<"\n";
     testResult=linearSearch(data,test);
     std::cout<<systemTimeNanoseconds()<<"\n";
-    std::cout << "Result: " << testResult << "\n";
+    std::cout << "Result:" << testResult << "\n";
 
     std::cout<<"\nBinary Search:\n";
     std::cout<<systemTimeNanoseconds()<<"\n";
