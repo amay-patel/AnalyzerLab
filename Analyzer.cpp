@@ -1,74 +1,82 @@
 #include <iostream>
-#include <vector>
 #include <string>
-#include "StringData.h"
-using namespace std;
+#include <vector>
+#include <chrono>
 
-int linearSearch(vector<string> stringDataSet, string element) {
-    for(int i = 0; i < stringDataSet.capacity(); i++)
-    {
-        if(stringDataSet.at(i) == element)
-        {
-            return i;
-        }
+inline long long systemTimeNanoseconds() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::time_point_cast<std::chrono::milliseconds>(
+                    std::chrono::system_clock::now()  ).time_since_epoch()
+    ).count();
+}
+inline std::vector<std::string>& getStringData() {
+    static std::vector<std::string> stringDataSet;
+    if (stringDataSet.size() == 0)    {
+        char tempSet[6] = "     ";
+        for (tempSet[0] = 'a'; tempSet[0] <= 'z'; tempSet[0]++)
+            for (tempSet[1] = 'a'; tempSet[1] <= 'z'; tempSet[1]++)
+                for (tempSet[2] = 'a'; tempSet[2] <= 'z'; tempSet[2]++)
+                    for (tempSet[3] = 'a'; tempSet[3] <= 'z'; tempSet[3]++)
+                        for (tempSet[4] = 'a'; tempSet[4] <= 'z'; tempSet[4]++)
+                            stringDataSet.push_back(std::string(tempSet));
     }
-
-    return -1;
+    return stringDataSet;
 }
 
-int binarySearch(vector<string> stringDataSet, string element) {
-    int high = stringDataSet.capacity() - 1;
-    int low = 0;
-    while(high >= low) {
-        int mid = low + (high - low) / 2;
-        if(stringDataSet[mid] == element)
-        {
-            return mid;
-        }
-        else if(element.compare(stringDataSet[mid]) > 0)
-        {
-            low = mid + 1;
-        }
-        else if(element.compare(stringDataSet[mid]) < 0)
-        {
-            high = mid - 1;
-        }
+int linearSearch(std::vector<std::string> dataSet,std::string element) {
+    int elementIndex=-1;
+    int index=0;
+    for(std::string value: dataSet) {
+        if(value.compare(element)==0)
+            elementIndex=index;
+        else
+            index++;
     }
-
-    return -1;
+    return elementIndex;
 }
-
-long long timeLinearSearch(vector<string> stringDataSet, string element) {
-    long long startTime = systemTimeNanoseconds();
-    linearSearch(stringDataSet, element);
-    long long endTime = systemTimeNanoseconds();
-    long long linearTime = endTime - startTime;
-
-    return linearTime;
+int binarySearch(std::vector<std::string> dataSet, std::string element) {
+    int elementIndex=-1;
+    int max, min, mid;
+    min=0;
+    max=dataSet.size()-1;
+    mid= min+ (max)/2;
+    while (mid!=min) {
+        if(dataSet[mid]==element) {
+            elementIndex=mid;
+            return elementIndex;
+        }
+        int compareS=element.compare(dataSet[mid]);
+        if (compareS<0) {
+            max=mid-1;
+        }
+        else {
+            min=mid+1;
+        }
+        mid=min+(max-min)/2;
+    }
+    if(dataSet[mid]==element) {
+        elementIndex=mid;
+    }
+    return elementIndex;
 }
-
-long long timeBinarySearch(vector<string> stringDataSet, string element) {
-    long long startTime = systemTimeNanoseconds();
-    binarySearch(stringDataSet, element);
-    long long endTime = systemTimeNanoseconds();
-    long long binaryTime = endTime - startTime;
-
-    return binaryTime;
-}
-
 int main() {
-    vector<string> data = getStringData();
-    long long timeLinAAAAA = timeLinearSearch(data, "aaaaa");
-    cout << timeLinAAAAA << endl;
-    long long timeBinAAAAA = timeBinarySearch(data, "aaaaa");
-    cout << timeBinAAAAA << endl;
-    long long timeLinMZZZZ = timeLinearSearch(data, "mzzzz");
-    cout << timeLinMZZZZ << endl;
-    long long timeBinMZZZZ = timeBinarySearch(data, "mzzzz");
-    cout << timeBinMZZZZ << endl;
-    long long timeLinNotHere = timeLinearSearch(data, "not_here");
-    cout << timeLinNotHere << endl;
-    long long timeBinNotHere = timeBinarySearch(data, "not_here");
-    cout << timeBinNotHere << endl;
+    int testResult;
+    std::vector<std::string> data= getStringData();
+    std::string test;
+    std::cout << "Enter string to test:";
+    std::cin >> test;
+
+    std::cout<<"Linear search:\n";
+    std::cout<<systemTimeNanoseconds()<<"\n";
+    testResult=linearSearch(data,test);
+    std::cout<<systemTimeNanoseconds()<<"\n";
+    std::cout << "Result: " << testResult << "\n";
+
+    std::cout<<"\nBinary Search:\n";
+    std::cout<<systemTimeNanoseconds()<<"\n";
+    testResult=binarySearch(data,test);
+    std::cout<<systemTimeNanoseconds()<<"\n";
+    std::cout << "Result: " << testResult << "\n";
     return 0;
-};
+}
+
